@@ -33,11 +33,18 @@
             color: red;
             font-weight: bold;
         }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+        }
+        .button-group button {
+            width: 48%;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Embed URL Generator</h1>
+        <h1>Embed URL Generator / VidSrc player</h1>
         <p class="warning">A popup may come up. If it does, close it and try clicking again.</p>
         <form id="embedForm">
             <label for="domain">Choose Domain:</label>
@@ -72,13 +79,10 @@
             <label for="sub_url">Subtitle URL (optional):</label>
             <input type="text" id="sub_url" placeholder="https://example.com/sample.srt">
             
-            <label>Action:</label>
-            <input type="radio" id="generateLink" name="action" value="generate" checked>
-            <label for="generateLink">Generate Embed Link</label>
-            <input type="radio" id="playMovie" name="action" value="play">
-            <label for="playMovie">Play Movie/TV Show</label>
-
-            <button type="submit">Generate</button>
+            <div class="button-group">
+                <button type="button" id="generateLinkButton">Generate Embed URL</button>
+                <button type="button" id="playButton">Play Movie/TV Show</button>
+            </div>
         </form>
         <p id="output"></p>
         <iframe id="embedFrame" src="" allowfullscreen></iframe>
@@ -95,9 +99,7 @@
             }
         });
 
-        document.getElementById('embedForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-
+        function generateEmbedUrl() {
             const domain = document.getElementById('domain').value;
             const id = document.getElementById('id').value;
             const contentType = document.getElementById('contentType').value;
@@ -105,7 +107,6 @@
             const sub_url = document.getElementById('sub_url').value;
             const season = document.getElementById('season').value;
             const episode = document.getElementById('episode').value;
-            const action = document.querySelector('input[name="action"]:checked').value;
 
             let embedUrl = `https://${domain}/embed/`;
 
@@ -130,13 +131,19 @@
                 embedUrl += '?' + params.join('&');
             }
 
-            if (action === 'generate') {
-                document.getElementById('output').textContent = `Generated Embed URL: ${embedUrl}`;
-                document.getElementById('embedFrame').src = '';
-            } else if (action === 'play') {
-                document.getElementById('embedFrame').src = embedUrl;
-                document.getElementById('output').textContent = `Playing from: ${embedUrl}`;
-            }
+            return embedUrl;
+        }
+
+        document.getElementById('generateLinkButton').addEventListener('click', function() {
+            const embedUrl = generateEmbedUrl();
+            document.getElementById('output').textContent = `Generated Embed URL: ${embedUrl}`;
+            document.getElementById('embedFrame').src = '';
+        });
+
+        document.getElementById('playButton').addEventListener('click', function() {
+            const embedUrl = generateEmbedUrl();
+            document.getElementById('embedFrame').src = embedUrl;
+            document.getElementById('output').textContent = `Playing from: ${embedUrl}`;
         });
     </script>
 </body>
