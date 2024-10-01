@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Embed URL Generator</title>
+    <title>VidSrc player</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -72,7 +72,13 @@
             <label for="sub_url">Subtitle URL (optional):</label>
             <input type="text" id="sub_url" placeholder="https://example.com/sample.srt">
             
-            <button type="submit">Generate Embed URL</button>
+            <label>Action:</label>
+            <input type="radio" id="generateLink" name="action" value="generate" checked>
+            <label for="generateLink">Generate Embed Link</label>
+            <input type="radio" id="playMovie" name="action" value="play">
+            <label for="playMovie">Play Movie/TV Show</label>
+
+            <button type="submit">Generate</button>
         </form>
         <p id="output"></p>
         <iframe id="embedFrame" src="" allowfullscreen></iframe>
@@ -99,6 +105,7 @@
             const sub_url = document.getElementById('sub_url').value;
             const season = document.getElementById('season').value;
             const episode = document.getElementById('episode').value;
+            const action = document.querySelector('input[name="action"]:checked').value;
 
             let embedUrl = `https://${domain}/embed/`;
 
@@ -123,8 +130,13 @@
                 embedUrl += '?' + params.join('&');
             }
 
-            document.getElementById('embedFrame').src = embedUrl;
-            document.getElementById('output').textContent = `Generated Embed URL: ${embedUrl}`;
+            if (action === 'generate') {
+                document.getElementById('output').textContent = `Generated Embed URL: ${embedUrl}`;
+                document.getElementById('embedFrame').src = '';
+            } else if (action === 'play') {
+                document.getElementById('embedFrame').src = embedUrl;
+                document.getElementById('output').textContent = `Playing from: ${embedUrl}`;
+            }
         });
     </script>
 </body>
