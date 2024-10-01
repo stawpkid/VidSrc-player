@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embed URL Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label, input, select, button {
+            display: block;
+            margin: 10px 0;
+            width: 100%;
+        }
+        iframe {
+            margin-top: 20px;
+            width: 100%;
+            height: 500px;
+            border: none;
+        }
+        .warning {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Embed URL Generator</h1>
+        <p class="warning">A popup may come up. If it does, close it and try clicking again.</p>
+        <form id="embedForm">
+            <label for="domain">Choose Domain:</label>
+            <select id="domain" required>
+                <option value="vidsrc.in">vidsrc.in</option>
+                <option value="vidsrc.pm">vidsrc.pm</option>
+                <option value="vidsrc.xyz">vidsrc.xyz</option>
+                <option value="vidsrc.net">vidsrc.net</option>
+            </select>
+            
+            <label for="id">Enter IMDb or TMDb ID:</label>
+            <input type="text" id="id" placeholder="e.g., tt5433140" required>
+            
+            <label for="contentType">Select Content Type:</label>
+            <select id="contentType" required>
+                <option value="movie">Movie</option>
+                <option value="tv">TV Show</option>
+                <option value="episode">Episode</option>
+            </select>
+            
+            <div id="seasonEpisodeFields" style="display: none;">
+                <label for="season">Season Number (for episodes):</label>
+                <input type="number" id="season" placeholder="e.g., 1">
+                
+                <label for="episode">Episode Number (for episodes):</label>
+                <input type="number" id="episode" placeholder="e.g., 1">
+            </div>
+            
+            <label for="ds_lang">Default Subtitle Language (optional):</label>
+            <input type="text" id="ds_lang" placeholder="ISO639 Language Code (e.g., en, de)">
+            
+            <label for="sub_url">Subtitle URL (optional):</label>
+            <input type="text" id="sub_url" placeholder="https://example.com/sample.srt">
+            
+            <button type="submit">Generate Embed URL</button>
+        </form>
+        <p id="output"></p>
+        <iframe id="embedFrame" src="" allowfullscreen></iframe>
+    </div>
+
+    <script>
+        document.getElementById('contentType').addEventListener('change', function() {
+            const type = this.value;
+            const seasonEpisodeFields = document.getElementById('seasonEpisodeFields');
+            if (type === 'episode') {
+                seasonEpisodeFields.style.display = 'block';
+            } else {
+                seasonEpisodeFields.style.display = 'none';
+            }
+        });
+
+        document.getElementById('embedForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const domain = document.getElementById('domain').value;
+            const id = document.getElementById('id').value;
+            const contentType = document.getElementById('contentType').value;
+            const ds_lang = document.getElementById('ds_lang').value;
+            const sub_url = document.getElementById('sub_url').value;
+            const season = document.getElementById('season').value;
+            const episode = document.getElementById('episode').value;
+
+            let embedUrl = `https://${domain}/embed/`;
+
+            if (contentType === 'movie') {
+                embedUrl += `movie/${id}`;
+            } else if (contentType === 'tv') {
+                embedUrl += `tv/${id}`;
+                if (season && episode) {
+                    embedUrl += `/${season}-${episode}`;
+                }
+            }
+
+            let params = [];
+            if (ds_lang) {
+                params.push(`ds_lang=${ds_lang}`);
+            }
+            if (sub_url) {
+                params.push(`sub_url=${encodeURIComponent(sub_url)}`);
+            }
+
+            if (params.length > 0) {
+                embedUrl += '?' + params.join('&');
+            }
+
+            document.getElementById('embedFrame').src = embedUrl;
+            document.getElementById('output').textContent = `Generated Embed URL: ${embedUrl}`;
+        });
+    </script>
+</body>
+</html>
