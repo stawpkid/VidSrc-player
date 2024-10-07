@@ -90,6 +90,7 @@
             <input type="text" id="sub_url" placeholder="https://example.com/sample.srt">
             <button type="button" id="generateLinkButton">Generate Embed URL</button>
             <button type="button" id="playButton">Play Movie/TV Show</button>
+            <button type="button" id="openembed">Open Embed URL in new tab</button>
         </form>
         <p id="output"></p>
         <iframe id="embedFrame" src="" allowfullscreen></iframe>
@@ -152,6 +153,11 @@
             document.getElementById('embedFrame').src = embedUrl;
             document.getElementById('output').textContent = `Playing from: ${embedUrl}`;
         });
+        document.getElementById('openembed').addEventListener('click', function() {
+            const embedUrl = generateEmbedUrl();
+            window.location.replace(embedUrl);
+        });
+        
     </script>
 </body>
 </html>
